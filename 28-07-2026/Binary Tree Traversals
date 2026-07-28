@@ -1,0 +1,119 @@
+#include<bits/stdc++.h>
+using namespace std;
+
+class Node
+{
+    public:
+        int data;
+        Node* left;
+        Node* right;
+        Node(int x)
+        {
+            data=x;
+            right=left=NULL;
+        }
+};
+
+Node* buildTree(int preorder[],int &idx)
+{
+
+        if(preorder[idx]==-1)
+        {
+            idx++;
+            return NULL;
+        }
+    
+        Node* root = new Node(preorder[idx]);
+        idx++;
+        root->left = buildTree(preorder,idx);
+        root->right = buildTree(preorder,idx);
+
+        return root;
+}
+
+void preOrder(Node* root)
+{
+    if(root == NULL) return;
+
+    cout<<root->data<<" ";
+    preOrder(root->left);
+    preOrder(root->right);
+} 
+
+void inOrder(Node* root)
+{
+    if(root == NULL) return;
+
+    
+    inOrder(root->left);
+    cout<<root->data<<" ";
+    inOrder(root->right);
+}
+
+void postOrder(Node* root)
+{
+    if(root == NULL) return;
+
+    
+    postOrder(root->left);
+    
+    postOrder(root->right);
+    cout<<root->data<<" ";
+}
+
+void levelOrderTraversal(Node* root)
+{
+    queue<Node*> q;
+    q.push(root);
+    q.push(NULL);
+    
+    
+    while(!q.empty())
+    {
+        Node* temp =q.front();
+        
+        q.pop();
+        if(temp==NULL)
+        {
+            if(!q.empty())
+            {
+                q.push(NULL);
+                cout<<endl;
+                continue;
+                
+            }
+            else{
+                break;
+            }  
+        }
+            cout<<temp->data<<" ";
+             if(temp->left) q.push(temp->left);
+             if(temp->right) q.push(temp->right);
+    }
+
+}
+
+
+int main()
+{
+    
+    int preorder[] = {1,3,6,-1,-1,7,-1,-1,5,8,-1,-1,4,9,-1,-1,2,-1,-1};
+    int idx=0;
+    Node* root = buildTree(preorder,idx);
+  
+    cout<<"preorder: ";
+    preOrder(root);
+    cout<<endl;
+
+    cout<<"inorder: ";
+    inOrder(root);
+    cout<<endl;
+
+    cout<<"postorder: ";
+    postOrder(root);
+    cout<<endl;
+    
+    cout<<"levelOrderTraversal: ";
+    levelOrderTraversal(root);
+    return 0;
+}
