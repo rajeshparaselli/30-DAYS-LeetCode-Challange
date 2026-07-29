@@ -1,0 +1,80 @@
+class Solution {
+public:
+    const long long LIMIT = 1000000LL;
+
+    // Computes number of distinct permutations of multiset represented by freq[]
+    // Result is capped at LIMIT+1.
+    long long countPermutations(vector<int>& freq) {
+        int total = 0;
+        for (int x : freq) total += x;
+
+        long double ans = 1.0;
+        int used = 0;
+
+        for (int i = 0; i < 26; i++) {
+            if (freq[i] == 0) continue;
+
+            int c = freq[i];
+            for (int j = 1; j <= c; j++) {
+                ans *= (used + j);
+                ans /= j;
+                if (ans > LIMIT) ans = LIMIT + 1;
+            }
+            used += c;
+        }
+
+        return min((long long)(ans + 0.5), LIMIT + 1);
+    }
+
+    string smallestPalindrome(string half, char mid) {
+        string rev = half;
+        reverse(rev.begin(), rev.end());
+
+        if (mid)
+            return half + string(1, mid) + rev;
+        return half + rev;
+    }
+
+    string smallestPalindrome(string s, int k) {
+        vector<int> freq(26, 0);
+
+        for (char c : s)
+            freq[c - 'a']++;
+
+        vector<int> halfFreq(26, 0);
+        char mid = 0;
+
+        for (int i = 0; i < 26; i++) {
+            halfFreq[i] = freq[i] / 2;
+            if (freq[i] % 2)
+                mid = char('a' + i);
+        }
+
+        if (countPermutations(halfFreq) < k)
+            return "";
+
+        int halfLen = s.size() / 2;
+        string half = "";
+
+        for (int pos = 0; pos < halfLen; pos++) {
+            for (int ch = 0; ch < 26; ch++) {
+                if (halfFreq[ch] == 0)
+                    continue;
+
+                halfFreq[ch]--;
+
+                long long ways = countPermutations(halfFreq);
+
+                if (ways >= k) {
+                    half.push_back(char('a' + ch));
+                    break;
+                } else {
+                    k -= ways;
+                    halfFreq[ch]++;
+                }
+            }
+        }
+
+        return smallestPalindrome(half, mid);
+    }
+};
